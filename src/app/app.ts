@@ -7,7 +7,7 @@ import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { PostWithComments, Posts } from './posts/posts';
 import { ApiService } from './services/api';
 import { Users } from './users/users';
-import { User } from './models/user';
+import { User } from './modelos/user';
 
 @Component({
   selector: 'app-root',

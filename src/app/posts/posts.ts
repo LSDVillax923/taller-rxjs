@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { Comment } from '../models/comment';
-import { Post, Reactions } from '../models/post';
+import { Comment } from '../modelos/comments';
+import { Post, Reactions } from '../modelos/post';
 import { Comments } from '../comments/comments';
 
 export interface PostWithComments extends Post {

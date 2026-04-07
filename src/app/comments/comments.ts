@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { Comment } from '../models/comment';
+import { Comment } from '../modelos/comments';
 
 @Component({
   selector: 'app-comments',

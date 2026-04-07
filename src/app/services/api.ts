@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CommentsResponse } from '../models/comment';
-import { PostsResponse } from '../models/post';
-import { UsersResponse } from '../models/user';
+import { CommentsResponse } from '../modelos/comments';
+import { PostsResponse } from '../modelos/post';
+import { UsersResponse } from '../modelos/user';
 
 @Injectable({
    providedIn: 'root',
