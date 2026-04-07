@@ -1,14 +1,18 @@
-<div *ngFor="let post of posts" class="card mb-3">
-  <div class="card-body">
-
-    <h5>{{post.title}}</h5>
-    <p>{{post.body}}</p>
-
-    <!-- reacciones -->
-    <p>👍 {{post.reactions}}</p>
-
-    <!-- comentarios -->
-    <app-comments [comments]="post.comments"></app-comments>
-
+<section class="mb-3">
+  <h2 class="mb-3">Posts del usuario</h2>
+  <div *ngIf="posts.length === 0" class="alert alert-info">
+    Este usuario no tiene posts.
   </div>
-</div>
+  <div *ngFor="let post of posts" class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <h5>{{ post.title }}</h5>
+      <p>{{ post.body }}</p>
+      <p class="mb-3 text-danger fw-semibold">
+        <i class="bi bi-heart-fill"></i>
+        {{ getLikes(post.reactions) }} reacciones
+      </p>
+
+      <app-comments [comments]="post.comments"></app-comments>
+    </div>
+  </div>
+  </section>

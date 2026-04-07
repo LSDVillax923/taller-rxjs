@@ -1,20 +1,26 @@
-<div class="container mt-4">
+<div class="container py-4">
+  <h1 class="mb-4">Taller RxJS - Búsqueda de perfil</h1>
 
-  <!-- BUSCADOR -->
-  <div class="mb-3">
-    <input [(ngModel)]="username" class="form-control" placeholder="Buscar username">
-    <button class="btn btn-primary mt-2" (click)="searchUser()">Buscar</button>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <label for="username" class="form-label fw-semibold">Username del usuario</label>
+      <div class="input-group">
+        <input
+          id="username"
+          [(ngModel)]="username"
+          class="form-control"
+          placeholder="Ejemplo: atuny0"
+          (keyup.enter)="searchUser()"
+        />
+        <button class="btn btn-primary" (click)="searchUser()" [disabled]="loading">
+          {{ loading ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
+    </div>
   </div>
-
-  <!-- ERROR -->
-  <div *ngIf="error" class="alert alert-danger">
-    Usuario no existe
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    No se encontró el usuario o hubo un error al consultar la API.
   </div>
-
-  <!-- USER -->
-  <app-users *ngIf="user" [user]="user"></app-users>
-
-  <!-- POSTS -->
-  <app-posts *ngIf="posts.length > 0" [posts]="posts"></app-posts>
-
+   <app-users *ngIf="user" [user]="user"></app-users>
+    <app-posts *ngIf="user" [posts]="posts"></app-posts>
 </div>

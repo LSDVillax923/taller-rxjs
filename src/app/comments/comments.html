@@ -1,8 +1,9 @@
-<div *ngIf="comments">
-  <div *ngFor="let c of comments" class="border p-2 mt-2">
+<div>
+  <h6 class="mb-2">Comentarios</h6>
+ <div *ngIf="comments.length === 0" class="text-muted small">Sin comentarios.</div>
 
-    <strong>{{c.user?.username}}</strong>
-    <p>{{c.body}}</p>
-
+  <div *ngFor="let c of comments" class="border rounded p-2 mt-2 bg-light-subtle">
+    <strong>{{ c.user.fullName || c.user.username }}</strong>
+    <p class="mb-0">{{ c.body }}</p>
   </div>
 </div>

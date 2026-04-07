@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { Comment } from '../models/comment';
+import { Post, Reactions } from '../models/post';
 import { Comments } from '../comments/comments';
+
+export interface PostWithComments extends Post {
+  comments: Comment[];
+}
 
 @Component({
   selector: 'app-posts',
@@ -10,13 +16,8 @@ import { Comments } from '../comments/comments';
   styleUrl: './posts.css',
 })
 export class Posts {
-  @Input() posts: any[] = [];
-}
-
-export interface Post {
-  id: number;
-  title: string;
-  body: string;
-  userId: number;
-  reactions: number;
+   @Input() posts: PostWithComments[] = [];
+   getLikes(reactions: number | Reactions): number {
+    return typeof reactions === 'number' ? reactions : reactions.likes;
+  }
 }

@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
-import { switchMap } from 'rxjs';
+import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
 
-import { Posts } from './posts/posts';
+import { PostWithComments, Posts } from './posts/posts';
 import { ApiService } from './services/api';
 import { Users } from './users/users';
+import { User } from './models/user';
 
 @Component({
   selector: 'app-root',
@@ -19,43 +19,72 @@ import { Users } from './users/users';
 
 export class App {
   username = '';
-  user: any = null;
-  posts: any[] = [];
-  //error: boolean = false;
+  user: User | null = null;
+  posts: PostWithComments[] = [];
   error = false;
+  loading = false;
 
   constructor(private api: ApiService) {}
 
   searchUser() {
+    const cleanUsername = this.username.trim();
+
     this.error = false;
+    this.user = null;
+    this.posts = [];
+
+    if (!cleanUsername) {
+      this.error = true;
+      return;
+    }
+
+    this.loading = true;
 
     this.api
-      .getUserByUsername(this.username)
+    .getUserByUsername(cleanUsername)
       .pipe(
-        switchMap((res: any) => {
+
+        switchMap((res) => {
           if (res.users.length === 0) {
             this.error = true;
-            throw new Error('No existe');
+             return of(null);
           }
 
-          this.user = res.users[0];
-          return this.api.getPostsByUser(this.user.id);
+           const foundUser = res.users[0];
+          this.user = foundUser;
+
+          return this.api.getPostsByUser(foundUser.id).pipe(
+            switchMap((postsRes) => {
+              if (postsRes.posts.length === 0) {
+                return of([] as PostWithComments[]);
+              }
+
+              const requests = postsRes.posts.map((post) =>
+                this.api.getCommentsByPost(post.id).pipe(
+                  map((commentsRes) => ({
+                    ...post,
+                    comments: commentsRes.comments,
+                  })),
+                ),
+              );
+
+              return forkJoin(requests);
+            }),
+          );
+        }),
+        catchError(() => {
+          this.error = true;
+          return of(null);
         }),
       )
       .subscribe({
-        next: (postsRes: any) => {
-          this.posts = postsRes.posts;
-
-          this.posts.forEach((post) => {
-            this.api.getCommentsByPost(post.id).subscribe((commentsRes: any) => {
-              post.comments = commentsRes.comments;
-            });
-          });
-
-                 },
+         next: (posts) => {
+          this.posts = posts ?? [];
+          this.loading = false;
+        },
         error: () => {
-          this.user = null;
-          this.posts = [];
+           this.error = true;
+          this.loading = false;
         },
       });
   }

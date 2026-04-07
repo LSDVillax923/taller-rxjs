@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { User } from '../models/user';
 
 @Component({
   selector: 'app-users',
@@ -9,13 +10,5 @@ import { Component, Input } from '@angular/core';
   styleUrl: './users.css',
 })
 export class Users {
-  @Input() user: any;
-}
-
-export interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
+   @Input({ required: true }) user!: User;
 }
