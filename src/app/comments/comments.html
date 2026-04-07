@@ -1,0 +1,8 @@
+<div *ngIf="comments">
+  <div *ngFor="let c of comments" class="border p-2 mt-2">
+
+    <strong>{{c.user?.username}}</strong>
+    <p>{{c.body}}</p>
+
+  </div>
+</div>
