@@ -1,21 +1,18 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { Comments } from '../comments/comments';
 
 @Component({
   selector: 'app-posts',
-  templateUrl: './posts.component.html'
-})
-export class PostsComponent {
-  @Input() posts: any[];
-}
-
-@Component({
-  selector: 'app-posts',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, Comments],
   templateUrl: './posts.html',
   styleUrl: './posts.css',
 })
-export class Posts {}
+export class Posts {
+  @Input() posts: any[] = [];
+}
+
 export interface Post {
   id: number;
   title: string;
