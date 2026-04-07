@@ -19,7 +19,8 @@
     </div>
   </div>
   <div *ngIf="error" class="alert alert-danger" role="alert">
-    No se encontró el usuario o hubo un error al consultar la API.
+    {{ errorMessage || 'No se encontró el usuario o hubo un error al consultar la API.' }}
+
   </div>
    <app-users *ngIf="user" [user]="user"></app-users>
     <app-posts *ngIf="user" [posts]="posts"></app-posts>

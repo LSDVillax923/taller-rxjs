@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
+import { catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
 
 import { PostWithComments, Posts } from './posts/posts';
 import { ApiService } from './services/api';
 import { Users } from './users/users';
 import { User } from './modelos/user';
+import { CommentsResponse } from './modelos/comments';
+import { PostsResponse } from './modelos/post';
 
 @Component({
   selector: 'app-root',
@@ -22,38 +24,48 @@ export class App {
   user: User | null = null;
   posts: PostWithComments[] = [];
   error = false;
+  errorMessage = '';
   loading = false;
 
   constructor(private api: ApiService) {}
 
   searchUser() {
-    const cleanUsername = this.username.trim();
+    const cleanUsername = this.username.trim().replace(/^@/, '').toLowerCase();
 
     this.error = false;
+    this.errorMessage = '';
     this.user = null;
     this.posts = [];
 
     if (!cleanUsername) {
       this.error = true;
+      this.errorMessage = 'Debes ingresar un username para buscar.';
       return;
     }
 
     this.loading = true;
 
     this.api
+
     .getUserByUsername(cleanUsername)
       .pipe(
 
+
+        tap(() => console.info('[API] Consulta de usuario realizada correctamente.')),
         switchMap((res) => {
           if (res.users.length === 0) {
             this.error = true;
-             return of(null);
+            this.errorMessage = `No se encontró el usuario "${cleanUsername}".`;
+            return of([] as PostWithComments[]);
           }
 
-           const foundUser = res.users[0];
+          const foundUser = res.users[0];
           this.user = foundUser;
 
           return this.api.getPostsByUser(foundUser.id).pipe(
+             catchError(() =>
+              of({ posts: [], total: 0, skip: 0, limit: 0 } as PostsResponse),
+            ),
             switchMap((postsRes) => {
               if (postsRes.posts.length === 0) {
                 return of([] as PostWithComments[]);
@@ -61,6 +73,9 @@ export class App {
 
               const requests = postsRes.posts.map((post) =>
                 this.api.getCommentsByPost(post.id).pipe(
+                  catchError(() =>
+                    of({ comments: [], total: 0, skip: 0, limit: 0 } as CommentsResponse),
+                  ),
                   map((commentsRes) => ({
                     ...post,
                     comments: commentsRes.comments,
@@ -74,16 +89,20 @@ export class App {
         }),
         catchError(() => {
           this.error = true;
+          this.errorMessage =
+            'Hubo un error al consultar la API. Verifica tu conexión o intenta nuevamente.';
           return of(null);
         }),
       )
       .subscribe({
-         next: (posts) => {
+        next: (posts) => {
           this.posts = posts ?? [];
           this.loading = false;
         },
         error: () => {
-           this.error = true;
+          this.error = true;
+          this.errorMessage = 'Error inesperado al procesar la búsqueda.';
+          this.loading = false;
           this.loading = false;
         },
       });

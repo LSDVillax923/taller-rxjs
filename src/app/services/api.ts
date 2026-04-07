@@ -13,7 +13,10 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   getUserByUsername(username: string) {
-      return this.http.get<UsersResponse>(`${this.url}/users/filter?key=username&value=${username}`);
+       const safeUsername = encodeURIComponent(username);
+    return this.http.get<UsersResponse>(
+      `${this.url}/users/filter?key=username&value=${safeUsername}`,
+    );
   }
 
   getPostsByUser(userId: number) {
