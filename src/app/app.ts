@@ -43,6 +43,8 @@ export class App {
       return;
     }
 
+    
+
     this.loading = true;
 
     this.api
@@ -93,6 +95,7 @@ export class App {
             'Hubo un error al consultar la API. Verifica tu conexión o intenta nuevamente.';
           return of(null);
         }),
+        
       )
       .subscribe({
         next: (posts) => {
@@ -107,4 +110,5 @@ export class App {
         },
       });
   }
+
 }
