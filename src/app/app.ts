@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
 
@@ -27,7 +27,10 @@ export class App {
   errorMessage = '';
   loading = false;
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   searchUser() {
     const cleanUsername = this.username.trim().replace(/^@/, '').toLowerCase();
@@ -42,8 +45,6 @@ export class App {
       this.errorMessage = 'Debes ingresar un username para buscar.';
       return;
     }
-
-    
 
     this.loading = true;
 
@@ -95,20 +96,19 @@ export class App {
             'Hubo un error al consultar la API. Verifica tu conexión o intenta nuevamente.';
           return of(null);
         }),
-        
       )
       .subscribe({
         next: (posts) => {
           this.posts = posts ?? [];
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: () => {
           this.error = true;
           this.errorMessage = 'Error inesperado al procesar la búsqueda.';
           this.loading = false;
-          this.loading = false;
+          this.cdr.detectChanges();
         },
       });
   }
-
 }
